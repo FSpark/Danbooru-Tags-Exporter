@@ -7,7 +7,7 @@
 // @namespace    https://github.com/FSpark/Danbooru-Tags-Exporter
 // @supportURL   https://github.com/FSpark/Danbooru-Tags-Exporter/issues
 // @homepageURL  https://github.com/FSpark/Danbooru-Tags-Exporter
-// @version      0.3
+// @version      0.3.1
 // @description  Select specified tags and copy to clipboard, for Stable Diffusion WebUI or NovelAI to use.
 // @description:zh-TW  選擇指定標籤並複製到剪貼板，供Stable Diffusion WebUI或NovelAI等使用
 // @description:zh-HK  選擇指定標籤並複製到剪貼板，供Stable Diffusion WebUI或NovelAI等使用
@@ -15,6 +15,7 @@
 // @description:ja  指定したタグを選択し、クリップボードにコピーして、Stable Diffusion WebUIやNovelAIなどで使用することができます。
 // @author       FSpark
 // @match        https://danbooru.donmai.us/posts/*
+// @match        https://safebooru.donmai.us/posts/*
 // @match        https://aibooru.online/posts/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=donmai.us
 // @grant        GM_setClipboard
