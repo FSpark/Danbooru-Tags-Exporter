@@ -10,7 +10,7 @@
 
 </div>
 
-## Screenshoot
+## Screenshot
 
 ![UI](./imgs/UI.png)
 
