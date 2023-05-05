@@ -17,6 +17,7 @@
 // @match        https://danbooru.donmai.us/posts/*
 // @match        https://safebooru.donmai.us/posts/*
 // @match        https://aibooru.online/posts/*
+// @match        https://betabooru.donmai.us/posts/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=donmai.us
 // @grant        GM_setClipboard
 // @grant        GM_notification
