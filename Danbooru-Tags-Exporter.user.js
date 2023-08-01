@@ -7,7 +7,8 @@
 // @namespace    https://github.com/FSpark/Danbooru-Tags-Exporter
 // @supportURL   https://github.com/FSpark/Danbooru-Tags-Exporter/issues
 // @homepageURL  https://github.com/FSpark/Danbooru-Tags-Exporter
-// @version      0.3.2
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
+// @version      0.3.3
 // @description  Select specified tags and copy to clipboard, for Stable Diffusion WebUI or NovelAI to use.
 // @description:zh-TW  選擇指定標籤並複製到剪貼板，供Stable Diffusion WebUI或NovelAI等使用
 // @description:zh-HK  選擇指定標籤並複製到剪貼板，供Stable Diffusion WebUI或NovelAI等使用
@@ -19,29 +20,15 @@
 // @match        https://aibooru.online/posts/*
 // @match        https://betabooru.donmai.us/posts/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=donmai.us
-// @grant        GM_setClipboard
-// @grant        GM_notification
-// @grant        GM_addStyle
+// @grant        GM.setClipboard
+// @grant        GM.notification
+// @grant        GM.addStyle
 // @license      AGPL-3.0
 // ==/UserScript==
 
 (function () {
     'use strict';
-    if(!GM_addStyle){
-        var GM_addStyle = function (aCss) {
-            'use strict';
-            let head = document.getElementsByTagName('head')[0];
-            if (head) {
-                let style = document.createElement('style');
-                style.setAttribute('type', 'text/css');
-                style.textContent = aCss;
-                head.appendChild(style);
-                return style;
-            }
-            return null;
-        };
-    }
-    GM_addStyle(`#tags-exporter-setting button, #tag-list button {padding: 0.25em 0.75em;}
+    GM.addStyle(`#tags-exporter-setting button, #tag-list button {padding: 0.25em 0.75em;}
                 #tags-exporter-setting label{margin: .25em; line-height: 1.5em;}
                .tag-weight {width: 3em; margin-left: .25em}`);
 
@@ -104,8 +91,8 @@
             tags.push(prompts)
         })
         let res = tags.join(", ")
-        GM_setClipboard(res)
-        GM_notification(`${tags.length} tag(s) were copied.`, "Danbooru Tags Exporter")
+        GM.setClipboard(res)
+        GM.notification(`${tags.length} tag(s) were copied.`, "Danbooru Tags Exporter")
     }
 
     function insertButtons(target){
