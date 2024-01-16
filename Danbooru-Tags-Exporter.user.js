@@ -15,7 +15,6 @@
 // @description:ja  指定したタグを選択し、クリップボードにコピーして、Stable Diffusion WebUIやNovelAIなどで使用することができます。タグをNovelAI方式のタグ順序で並べ替えることが可能です。
 // @author       Takenoko3333
 // @match        https://danbooru.donmai.us/posts/*
-// @match        https://safebooru.donmai.us/posts/*
 // @match        https://aibooru.online/posts/*
 // @match        https://betabooru.donmai.us/posts/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=donmai.us
