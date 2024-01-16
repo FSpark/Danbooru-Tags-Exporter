@@ -25,6 +25,8 @@
 // @license      AGPL-3.0
 // ==/UserScript==
 
+// Forked from FSpark/Danbooru-Tags-Exporter(https://github.com/FSpark/Danbooru-Tags-Exporter)
+
 (function () {
     'use strict';
 
