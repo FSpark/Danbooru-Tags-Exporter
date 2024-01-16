@@ -27,5 +27,7 @@ For Example
 
 Will be exported as `1girl, kirisame marisa, touhou, tian \(my dear\), basket, (((blonde hair))), [[curly hair]], eyebrows hidden by hair, (floating hair), forest, grass, hair between eyes, hat, holding, holding basket, ((long hair)), looking at viewer, looking back, nature, outdoors, solo, squatting, tree, witch, witch hat, yellow eyes`
 
+> For display function only, the source of the picture is https://pixiv.net/artworks/102093005, thanks.
+
 ## License
 The AGPL-3.0 License.
