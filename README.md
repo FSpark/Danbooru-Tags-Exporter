@@ -5,7 +5,7 @@ Tags can be sorted by tag order in NovelAI method.</p>
 <p>指定したタグを選択し、クリップボードにコピーして、Stable Diffusion WebUIやNovelAIなどで使用することができます。<br>
 タグをNovelAI方式のタグ順序で並べ替えることが可能です。</p>
 
-forked from [FSpark/Danbooru-Tags-Exporter](https://github.com/FSpark/Danbooru-Tags-Exporter)
+Forked from [FSpark/Danbooru-Tags-Exporter](https://github.com/FSpark/Danbooru-Tags-Exporter)
 </div>
 
 ## Description
