@@ -7,6 +7,7 @@
 // @namespace    https://github.com/Takenoko3333/Danbooru-Tags-Sort-Exporter
 // @supportURL   https://github.com/Takenoko3333/Danbooru-Tags-Sort-Exporter/issues
 // @homepageURL  https://github.com/Takenoko3333/Danbooru-Tags-Sort-Exporter
+// @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @version      0.4.0
 // @description  Select specified tags and copy to clipboard, for Stable Diffusion WebUI or NovelAI to use. Tags can be sorted by tag order in NovelAI method.
 // @description:zh-TW  選擇指定標籤並複製到剪貼板，供Stable Diffusion WebUI或NovelAI等使用。標籤可根據 NovelAI 的標籤排序方法進行排序。
