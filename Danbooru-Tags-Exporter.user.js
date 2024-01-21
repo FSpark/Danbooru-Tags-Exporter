@@ -115,7 +115,7 @@
         let sort = document.getElementById("sort").checked
         if(!target) {
             if(sort) {
-                ["[name=character-tags]:checked","[name=copyright-tags]:checked",,"[name=artist-tags]:checked","[name=general-tags]:checked"].forEach((t)=>createTags(t));
+                ["[name=character-tags]:checked","[name=copyright-tags]:checked","[name=artist-tags]:checked","[name=general-tags]:checked"].forEach((t)=>createTags(t));
             } else {
                 createTags(`#tag-list input[type='checkbox']:checked`);
             }
