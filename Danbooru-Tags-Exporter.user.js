@@ -23,8 +23,6 @@
 // @grant        GM.notification
 // @grant        GM.addStyle
 // @license      AGPL-3.0
-// @downloadURL https://update.greasyfork.org/scripts/484998/Danbooru%20Tags%20Select%20to%20Sort%20and%20Export.user.js
-// @updateURL https://update.greasyfork.org/scripts/484998/Danbooru%20Tags%20Select%20to%20Sort%20and%20Export.meta.js
 // ==/UserScript==
 
 // Forked from FSpark/Danbooru-Tags-Exporter(https://github.com/FSpark/Danbooru-Tags-Exporter)
