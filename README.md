@@ -11,29 +11,64 @@ Tags can be sorted by tag order in NovelAI method.</p>
 Forked from [FSpark/Danbooru-Tags-Exporter](https://github.com/FSpark/Danbooru-Tags-Exporter)
 </div>
 
-## Description
+# Description
 Added the ability to sort tags by NovelAI method tag order in addition to the original functionality.<br>
-元の機能に加えてタグをNovelAI方式のタグ順序で並べ替える機能を追加。
+2024-01-23 Added ability to save export settings. Settings changed on the web page are saved to local storage and applied when revisiting.<br>
+<br>
+元の機能に加えてタグをNovelAI方式のタグ順序で並べ替える機能を追加。<br>
+2024-01-23 書き出し設定の保存機能を追加。ウェブページ上で変更した設定はローカルストレージに保存され、再訪時に適用されます。<br>
+<br>
 
 Tag order in NovelAI method.
 ```
 1boy, 1girl, characters, series, everything else in any order
 ```
+<br>
 
-For Example
+For Example(Stable Diffusion WebUI)
 ```
-1girl, kirisame marisa, touhou, tian \(my dear\), basket, (((blonde hair))), [[curly hair]], eyebrows hidden by hair, (floating hair), forest, grass, hair between eyes, hat, holding, holding basket, ((long hair)), looking at viewer, looking back, nature, outdoors, solo, squatting, tree, witch, witch hat, yellow eyes
+1girl, kirisame marisa, touhou, tian \(my dear\), basket, (((blonde hair))), [[curly hair]], eyebrows hidden by hair, floating hair, forest, hair between eyes, hat, holding, holding basket, long hair, looking at viewer, looking back, nature, outdoors, solo, squatting, tree, witch, witch hat, yellow eyes
 ```
+<br>
 
-## Screenshot
-![UI](https://github.com/Takenoko3333/Danbooru-Tags-Sort-Exporter/assets/153407565/64468403-6ff1-4b04-9a86-016bd70b2ef1)
+For Example(NovelAI)
+```
+1girl, kirisame marisa, touhou, tian (my dear), basket, {{{blonde hair}}}, [[curly hair]], eyebrows hidden by hair, floating hair, forest, hair between eyes, hat, holding, holding basket, long hair, looking at viewer, looking back, nature, outdoors, solo, squatting, tree, witch, witch hat, yellow eyes
+```
+<br>
 
-Will be exported as `1girl, kirisame marisa, touhou, tian \(my dear\), basket, (((blonde hair))), [[curly hair]], eyebrows hidden by hair, (floating hair), forest, grass, hair between eyes, hat, holding, holding basket, ((long hair)), looking at viewer, looking back, nature, outdoors, solo, squatting, tree, witch, witch hat, yellow eyes`
+# Screenshot
+![UI](https://github.com/Takenoko3333/Danbooru-Tags-Sort-Exporter/assets/153407565/a155f18a-62e9-4ef1-9426-af2b6ce7b023)
+
+Will be exported as `1girl, kirisame marisa, touhou, tian (my dear), basket, {{{blonde hair}}}, [[curly hair]], eyebrows hidden by hair, floating hair, forest, hair between eyes, hat, holding, holding basket, long hair, looking at viewer, looking back, nature, outdoors, solo, squatting, tree, witch, witch hat, yellow eyes`
 
 > For display function only, the source of the picture is https://pixiv.net/artworks/102093005, thanks.
 
-## Install
+# Install
 [Greasyfork](https://greasyfork.org/ja/scripts/484998-danbooru-tags-select-to-sort-and-export)
+<br><br>
+
+# Change log
+## [0.5.0] - 2024-01-23
+### Added
+- Added ability to save export settings to local storage.
+- 書き出し設定のローカルストレージ保存機能を追加。
+
+## [0.4.2] - 2024-01-22
+### Fixed
+- Fixed code.
+- コードを修正。
+
+## [0.4.1] - 2024-01-17
+### Added
+- Added polyfill.js
+- polyfill.jsを追加。
+
+## [0.4.0] - 2024-01-17
+### Added
+- Added the ability to sort tags by NovelAI method tag order in addition to the original functionality.
+- 元の機能に加えてタグをNovelAI方式のタグ順序で並べ替える機能を追加。
+<br><br>
 
 ## License
 The AGPL-3.0 License.
