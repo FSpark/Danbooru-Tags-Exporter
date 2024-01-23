@@ -67,6 +67,11 @@ Danbooru, AIbooru, Betabooru
 <br><br>
 
 # Change log
+## [0.5.2] - 2024-01-24
+### Fixed
+- Fixed wrapping of pre-checked state.
+- 事前チェックステータスの折り返しを修正。
+
 ## [0.5.1] - 2024-01-24
 ### Added
 - Added ability to set pre-check status for each tag category.
