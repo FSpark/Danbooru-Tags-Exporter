@@ -5,7 +5,8 @@
 
 <p>Select specified tags and copy to clipboard, for Stable Diffusion WebUI or NovelAI to use.<br>
 Tags can be sorted by tag order in NovelAI method.</p>
-<p>指定したタグを選択し、クリップボードにコピーして、Stable Diffusion WebUIやNovelAIなどで使用することができます。<br>
+<p>指定したタグを選択しクリップボードにコピーして、<br>
+Stable Diffusion WebUIやNovelAIなどで使用することができます。<br>
 タグをNovelAI方式のタグ順序で並べ替えることが可能です。</p>
 
 Forked from [FSpark/Danbooru-Tags-Exporter](https://github.com/FSpark/Danbooru-Tags-Exporter)
@@ -14,9 +15,12 @@ Forked from [FSpark/Danbooru-Tags-Exporter](https://github.com/FSpark/Danbooru-T
 # Description
 Added the ability to sort tags by NovelAI method tag order in addition to the original functionality.<br>
 2024-01-23 Added ability to save export settings. Settings changed on the web page are saved to local storage and applied when revisiting.<br>
+2024-01-24 Added ability to set pre-check status for each tag category.<br>
 <br>
 元の機能に加えてタグをNovelAI方式のタグ順序で並べ替える機能を追加。<br>
 2024-01-23 書き出し設定の保存機能を追加。ウェブページ上で変更した設定はローカルストレージに保存され、再訪時に適用されます。<br>
+2024-01-24 タグのカテゴリー毎に事前チェックのステータスを設定できる機能を追加。<br>
+
 <br>
 
 Tag order in NovelAI method.
@@ -38,17 +42,28 @@ For Example(NovelAI)
 <br>
 
 # Screenshot
-![UI](https://github.com/Takenoko3333/Danbooru-Tags-Sort-Exporter/assets/153407565/a155f18a-62e9-4ef1-9426-af2b6ce7b023)
+![UI](https://github.com/Takenoko3333/Danbooru-Tags-Sort-Exporter/assets/153407565/5e6b4b75-c568-44eb-8b49-c22b00a6d485)
 
-Will be exported as `1girl, kirisame marisa, touhou, tian (my dear), basket, {{{blonde hair}}}, [[curly hair]], eyebrows hidden by hair, floating hair, forest, hair between eyes, hat, holding, holding basket, long hair, looking at viewer, looking back, nature, outdoors, solo, squatting, tree, witch, witch hat, yellow eyes`
+Will be exported as `1girl, kirisame marisa, touhou, basket, {{{blonde hair}}}, [[curly hair]], eyebrows hidden by hair, floating hair, forest, hair between eyes, hat, holding, holding basket, long hair, looking at viewer, looking back, nature, outdoors, solo, squatting, tree, witch, witch hat, yellow eyes`
 
 > For display function only, the source of the picture is https://pixiv.net/artworks/102093005, thanks.
+<br>
+
+# Supported sites
+Danbooru, AIbooru, Betabooru
+<br><br>
 
 # Install
-[Greasyfork](https://greasyfork.org/ja/scripts/484998-danbooru-tags-select-to-sort-and-export)
+- Install this [script](https://github.com/Takenoko3333/Danbooru-Tags-Sort-Exporter/blob/main/Danbooru-Tags-Exporter.user.js) in Tampermonkey or other UserScript.
+- You can install from [Greasy Fork](https://greasyfork.org/ja/scripts/484998-danbooru-tags-select-to-sort-and-export).
 <br><br>
 
 # Change log
+## [0.5.1] - 2024-01-24
+### Added
+- Added ability to set pre-check status for each tag category.
+- タグのカテゴリー毎に事前チェックのステータスを設定できる機能を追加。
+
 ## [0.5.0] - 2024-01-23
 ### Added
 - Added ability to save export settings to local storage.
