@@ -8,7 +8,7 @@
 // @supportURL   https://github.com/Takenoko3333/Danbooru-Tags-Sort-Exporter/issues
 // @homepageURL  https://github.com/Takenoko3333/Danbooru-Tags-Sort-Exporter
 // @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
-// @version      0.5.0
+// @version      0.5.1
 // @description  Select specified tags and copy to clipboard, for Stable Diffusion WebUI or NovelAI to use. Tags can be sorted by tag order in NovelAI method.
 // @description:zh-TW  選擇指定標籤並複製到剪貼板，供Stable Diffusion WebUI或NovelAI等使用。標籤可根據 NovelAI 的標籤排序方法進行排序。
 // @description:zh-HK  選擇指定標籤並複製到剪貼板，供Stable Diffusion WebUI或NovelAI等使用。標籤可根據 NovelAI 的標籤排序方法進行排序。
@@ -38,19 +38,32 @@
         sort: true, // Sorted by tag order in NovelAI method. (タグをNovelAI方式で並び替える)
         bracketEscape: false, // true: Stable Diffusion, false: NovelAI
         setWeight: false, // true: Show and Activate weight inputs. (ウェイト入力の表示と有効化)
-        useBracket: 1 // 0: ( ) Stable Diffusion, 1: { } NovelAI
+        useBracket: 1, // 0: ( ) Stable Diffusion, 1: { } NovelAI
+        selections: {artist: true, copyright: true, character: true, general: true} // Pre-checked state for each category. (カテゴリ毎の初期選択状態)
     };
     // ==/Settings==
 
     let settings = {};
-    let localSettings = JSON.parse(localStorage.getItem("settings"));
-    settings = localSettings || initialSettings;
+    let localSettings = JSON.parse(localStorage.getItem("settings")) || {};
+    for (let key in initialSettings) {
+        if (localSettings[key] === undefined) {
+            settings[key] = initialSettings[key];
+        } else {
+            settings[key] = localSettings[key];
+        }
+    }
+    localStorage.setItem("settings", JSON.stringify(settings));
+    // console.log(settings)
 
     let sortCheck = "";
     let bracketEscapeCheck = "";
     let setWeightCheck = "";
     let roundBracketsRadio = "";
     let curlyBracketsRadio = "";
+    let selectArtistCheck = "";
+    let selectCopyrightCheck = "";
+    let selectCharacterCheck = "";
+    let selectGeneralCheck = "";
 
     if(settings.sort) {
         sortCheck = "checked";
@@ -66,10 +79,25 @@
     } else {
         roundBracketsRadio = "checked";
     }
+    if(settings.selections) {
+        if(settings.selections.artist) {
+            selectArtistCheck = "checked";
+        }
+        if(settings.selections.copyright) {
+            selectCopyrightCheck = "checked";
+        }
+        if(settings.selections.character) {
+            selectCharacterCheck = "checked";
+        }
+        if(settings.selections.general) {
+            selectGeneralCheck = "checked";
+        }
+    }
 
     GM.addStyle(`#tags-exporter-setting button, #tag-list button {margin: 0.25rem 0 0.5rem 0; padding: 0.25em 0.75em;}
                  #tags-exporter-setting button#reset-settings {margin-top: .5em}
-                 #tags-exporter-setting label{margin: .25em; line-height: 1.5em;}
+                 #tags-exporter-setting label {padding: .25em; line-height: 1.5em;}
+                 #tags-exporter-setting .heading {margin-top: .25em; line-height: 1.5em;}
                  .tag-weight {width: 3em; margin-left: .25em}`);
 
     let SettingPanel = document.createElement('section');
@@ -81,7 +109,15 @@
         <input type="checkbox" id="set-weight"  ${setWeightCheck}/><label for="set-weight">Setting weights</label><br>
         <div>
         <input type="radio" name="use_bracket" id="round-brackets" value="0" ${roundBracketsRadio}/><label for="round-brackets">Using ( )</label>
-        <input type="radio" name="use_bracket" id="curly-brackets" value="1" ${curlyBracketsRadio}/><label for="curly-brackets">Using { }</label></div>
+        <input type="radio" name="use_bracket" id="curly-brackets" value="1" ${curlyBracketsRadio}/><label for="curly-brackets">Using { }</label>
+        </div>
+        <div>
+        <div class="heading">Pre-checked</div>
+        <input type="checkbox" id="select-artist" ${selectArtistCheck}/><label for="select-artist">Artist</label>
+        <input type="checkbox" id="select-copyright" ${selectCopyrightCheck}/><label for="select-copyright">Copyright</label>
+        <input type="checkbox" id="select-character" ${selectCharacterCheck}/><label for="select-character">Character</label>
+        <input type="checkbox" id="select-general" ${selectGeneralCheck}/><label for="select-general">General</label>
+        </div>
         <button name="reset_settings" id="reset-settings">Settings Reset</button>
         `
 	let Container = document.createElement('div');
@@ -175,7 +211,9 @@
             chk.type = "checkbox"
             chk.name = `${target}s`
 			chk.value = e.dataset.tagName.replaceAll("_", " ")
-            chk.checked = true
+            if(settings.selections[target.replace("-tag", "")]) {
+                chk.checked = true
+            }
             e.insertBefore(chk, e.firstChild)
 
             let nbr = document.createElement('input');
@@ -219,8 +257,13 @@
         let setWeight = document.getElementById("set-weight").checked;
         let roundBrackets = document.getElementById("round-brackets").checked;
         let useBracket = roundBrackets ? 0 : 1;
-        localStorage.setItem("settings", JSON.stringify({sort: sort, bracketEscape: bracketEscape, setWeight: setWeight, useBracket: useBracket}));
-        console.log(JSON.parse(localStorage.getItem("settings")));
+        let selections = {artist: document.getElementById("select-artist").checked,
+                          copyright: document.getElementById("select-copyright").checked,
+                          character: document.getElementById("select-character").checked,
+                          general: document.getElementById("select-general").checked
+                         };
+        localStorage.setItem("settings", JSON.stringify({sort: sort, bracketEscape: bracketEscape, setWeight: setWeight, useBracket: useBracket, selections: selections}));
+        // console.log(JSON.parse(localStorage.getItem("settings")));
     }
 
     function resetSettings() {
@@ -234,6 +277,10 @@
             document.getElementById("round-brackets").checked = true;
         }
         toggleWeightInputs();
+        document.getElementById("select-artist").checked = initialSettings.selections.artist;
+        document.getElementById("select-copyright").checked = initialSettings.selections.copyright;
+        document.getElementById("select-character").checked = initialSettings.selections.character;
+        document.getElementById("select-general").checked = initialSettings.selections.general;
     }
 
     function toggleWeightInputs(event) {
