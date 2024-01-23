@@ -8,7 +8,7 @@
 // @supportURL   https://github.com/Takenoko3333/Danbooru-Tags-Sort-Exporter/issues
 // @homepageURL  https://github.com/Takenoko3333/Danbooru-Tags-Sort-Exporter
 // @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
-// @version      0.5.1
+// @version      0.5.2
 // @description  Select specified tags and copy to clipboard, for Stable Diffusion WebUI or NovelAI to use. Tags can be sorted by tag order in NovelAI method.
 // @description:zh-TW  選擇指定標籤並複製到剪貼板，供Stable Diffusion WebUI或NovelAI等使用。標籤可根據 NovelAI 的標籤排序方法進行排序。
 // @description:zh-HK  選擇指定標籤並複製到剪貼板，供Stable Diffusion WebUI或NovelAI等使用。標籤可根據 NovelAI 的標籤排序方法進行排序。
@@ -98,6 +98,7 @@
                  #tags-exporter-setting button#reset-settings {margin-top: .5em}
                  #tags-exporter-setting label {padding: .25em; line-height: 1.5em;}
                  #tags-exporter-setting .heading {margin-top: .25em; line-height: 1.5em;}
+                 #tags-exporter-setting .inline-checkbox {display: inline-block;}
                  .tag-weight {width: 3em; margin-left: .25em}`);
 
     let SettingPanel = document.createElement('section');
@@ -113,10 +114,10 @@
         </div>
         <div>
         <div class="heading">Pre-checked</div>
-        <input type="checkbox" id="select-artist" ${selectArtistCheck}/><label for="select-artist">Artist</label>
-        <input type="checkbox" id="select-copyright" ${selectCopyrightCheck}/><label for="select-copyright">Copyright</label>
-        <input type="checkbox" id="select-character" ${selectCharacterCheck}/><label for="select-character">Character</label>
-        <input type="checkbox" id="select-general" ${selectGeneralCheck}/><label for="select-general">General</label>
+        <span class="inline-checkbox"><input type="checkbox" id="select-artist" ${selectArtistCheck}/><label for="select-artist">Artist</label></span>
+        <span class="inline-checkbox"><input type="checkbox" id="select-copyright" ${selectCopyrightCheck}/><label for="select-copyright">Copyright</label></span>
+        <span class="inline-checkbox"><input type="checkbox" id="select-character" ${selectCharacterCheck}/><label for="select-character">Character</label></span>
+        <span class="inline-checkbox"><input type="checkbox" id="select-general" ${selectGeneralCheck}/><label for="select-general">General</label></span>
         </div>
         <button name="reset_settings" id="reset-settings">Settings Reset</button>
         `
