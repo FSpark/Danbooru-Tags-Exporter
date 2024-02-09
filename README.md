@@ -69,6 +69,11 @@ Danbooru, AIbooru, Betabooru, Gelbooru
 <br><br>
 
 # Change log
+## [0.6.2] - 2024-02-09
+### Fixed
+- Fixed input width for weights.
+- ウェイトの入力幅を修正。
+
 ## [0.6.0] - 2024-02-09
 ### Added
 - Gelbooru support.
