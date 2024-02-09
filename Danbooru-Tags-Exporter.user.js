@@ -8,7 +8,7 @@
 // @supportURL   https://github.com/Takenoko3333/Danbooru-Tags-Sort-Exporter/issues
 // @homepageURL  https://github.com/Takenoko3333/Danbooru-Tags-Sort-Exporter
 // @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
-// @version      0.5.2
+// @version      0.6.0
 // @description  Select specified tags and copy to clipboard, for Stable Diffusion WebUI or NovelAI to use. Tags can be sorted by tag order in NovelAI method.
 // @description:zh-TW  選擇指定標籤並複製到剪貼板，供Stable Diffusion WebUI或NovelAI等使用。標籤可根據 NovelAI 的標籤排序方法進行排序。
 // @description:zh-HK  選擇指定標籤並複製到剪貼板，供Stable Diffusion WebUI或NovelAI等使用。標籤可根據 NovelAI 的標籤排序方法進行排序。
@@ -18,6 +18,7 @@
 // @match        https://danbooru.donmai.us/posts/*
 // @match        https://aibooru.online/posts/*
 // @match        https://betabooru.donmai.us/posts/*
+// @match        https://gelbooru.com/index.php?page=post&s=view*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=donmai.us
 // @grant        GM.setClipboard
 // @grant        GM.notification
@@ -94,12 +95,23 @@
         }
     }
 
-    GM.addStyle(`#tags-exporter-setting button, #tag-list button {margin: 0.25rem 0 0.5rem 0; padding: 0.25em 0.75em;}
+    GM.addStyle(`#tags-exporter-setting button, #tag-list button {margin: 0.25rem 0 0.5rem 0; padding: 0.25em 0.55em;}
                  #tags-exporter-setting button#reset-settings {margin-top: .5em}
-                 #tags-exporter-setting label {padding: .25em; line-height: 1.5em;}
+                 #tags-exporter-setting label {display: inline-block; padding: .1em .25em; line-height: 1.5em;}
                  #tags-exporter-setting .heading {margin-top: .25em; line-height: 1.5em;}
                  #tags-exporter-setting .inline-checkbox {display: inline-block;}
-                 .tag-weight {width: 3em; margin-left: .25em}`);
+                 #tag-list input[type='checkbox']  {margin-right: .4em}
+                 .tag-weight {width: 2em; margin-right: .4em}
+                `);
+
+    if (location.hostname == "gelbooru.com") {
+        GM.addStyle(`#tags-exporter-setting {margin: 0 10px 0 25px;}
+                     #tags-exporter-setting h2 {font-size: 1.2em;}
+                     #tags-exporter-setting .heading {font-weight: bold}
+                     #tags-exporter-setting button, #tag-list button {padding: 0.25em 0.4em;}
+                     [id$="-tag-buttons"] {margin: 0 4px 0 15px;}
+                    `);
+    }
 
     let SettingPanel = document.createElement('section');
     SettingPanel.id = "tags-exporter-setting";
@@ -130,12 +142,20 @@
         <button name="export">Export</button>
         `
 
-	function insertAfter(newNode, referenceNode) {
+    function insertBefore(newNode, referenceNode) {
+        referenceNode.parentNode.insertBefore(newNode, referenceNode);
+    }
+
+    function insertAfter(newNode, referenceNode) {
         referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
     }
 
-    insertAfter(SettingPanel, document.querySelector("#search-box"))
-    insertAfter(Container, document.querySelector("#tags-exporter-setting > h2"))
+    if (location.hostname == "gelbooru.com") {
+        insertBefore(SettingPanel, document.querySelector("#tag-list"));
+    } else {
+        insertAfter(SettingPanel, document.querySelector("#search-box"));
+    }
+    insertAfter(Container, document.querySelector("#tags-exporter-setting > h2"));
 
     function addBrackets(prompts,isRound,n){
         let l,r;
@@ -202,16 +222,37 @@
     }
 
     function insertButtons(target){
-        let head = document.querySelector(`h3.${target}-list`)
+        let head = document.querySelector(`h3.${target}-tag-list`)
+        if (location.hostname == "gelbooru.com") {
+            head = document.querySelector(`.tag-type-${target}`)
+        }
         if(!head) return;
         let buttonContainer = Container.cloneNode(true)
-        buttonContainer.id = `${target}-buttons`
-		insertAfter(buttonContainer, head)
-        document.querySelectorAll(`.${target}-list>li`).forEach((e) => {
+        buttonContainer.id = `${target}-tag-buttons`
+        if (location.hostname == "gelbooru.com") {
+            insertBefore(buttonContainer, head)
+        } else {
+            insertAfter(buttonContainer, head)
+        }
+
+        let tagItem = `.${target}-tag-list>li`;
+        if (location.hostname == "gelbooru.com") {
+            tagItem = `.tag-type-${target}`;
+        }
+
+        document.querySelectorAll(tagItem).forEach((e) => {
             let chk = document.createElement('input');
             chk.type = "checkbox"
-            chk.name = `${target}s`
-			chk.value = e.dataset.tagName.replaceAll("_", " ")
+            chk.name = `${target}-tags`
+            if (location.hostname == "gelbooru.com") {
+                let aTags = e.querySelectorAll('a');
+                if (aTags.length > 0) {
+                    let lastATag = aTags[aTags.length - 1];
+                    chk.value = lastATag.textContent;
+                }
+            } else {
+                chk.value = e.dataset.tagName.replaceAll("_", " ")
+            }
             if(settings.selections[target.replace("-tag", "")]) {
                 chk.checked = true
             }
@@ -219,7 +260,7 @@
 
             let nbr = document.createElement('input');
             nbr.type = "number"
-            nbr.name = `${target}s-weight`
+            nbr.name = `${target}-tags-weight`
             nbr.className = "tag-weight"
             nbr.value = 0
             nbr.hidden = true
@@ -227,28 +268,28 @@
         })
 
         buttonContainer.querySelector("[name='select_all']").onclick = function () {
-            var items = document.getElementsByName(`${target}s`);
+            var items = document.getElementsByName(`${target}-tags`);
             for (var i = 0; i < items.length; i++) {
                 items[i].checked = true;
 
             }
         };
         buttonContainer.querySelector("[name='select_none']").onclick = function () {
-            var items = document.getElementsByName(`${target}s`);
+            var items = document.getElementsByName(`${target}-tags`);
             for (var i = 0; i < items.length; i++) {
                 items[i].checked = false;
 
             }
         };
         buttonContainer.querySelector("[name='invert_select']").onclick = function () {
-            var items = document.getElementsByName(`${target}s`);
+            var items = document.getElementsByName(`${target}-tags`);
             for (var i = 0; i < items.length; i++) {
                 items[i].checked == true ? items[i].checked = false : items[i].checked = true;
 
             }
         };
         buttonContainer.querySelector("[name='export']").onclick = function () {
-            exportTags(`[name=${target}s]:checked`)
+            exportTags(`[name=${target}-tags]:checked`)
         };
     }
 
@@ -292,7 +333,7 @@
         }
     }
 
-    ["artist-tag","character-tag","copyright-tag","general-tag"].forEach((t)=>insertButtons(t))
+    ["artist","character","copyright","general"].forEach((t)=>insertButtons(t))
 
     toggleWeightInputs();
 
