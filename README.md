@@ -19,12 +19,13 @@ Added the ability to sort tags by NovelAI method tag order in addition to the or
 2024-01-23 Added ability to save export settings. Settings changed on the web page are saved to local storage and applied when revisiting.<br>
 2024-01-24 Added ability to set pre-check status for each tag category.<br>
 2024-02-09 Gelbooru support.<br>
+2024-02-14 Rule 34 support.<br>
 <br>
 元の機能に加えてタグをNovelAI方式のタグ順序で並べ替える機能を追加。<br>
 2024-01-23 書き出し設定の保存機能を追加。ウェブページ上で変更した設定はローカルストレージに保存され、再訪時に適用されます。<br>
 2024-01-24 タグのカテゴリー毎に事前チェックのステータスを設定できる機能を追加。<br>
 2024-02-09 Gelbooruに対応。<br>
-
+2024-02-14 Rule 34に対応。<br>
 <br>
 
 Tag order in NovelAI method.
@@ -54,7 +55,7 @@ Will be exported as `1girl, kirisame marisa, touhou, basket, {{{blonde hair}}}, 
 <br>
 
 # Supported sites
-Danbooru, AIbooru, Betabooru, Gelbooru
+Danbooru, AIbooru, Betabooru, Gelbooru, Rule 34
 <br><br>
 
 # Install
@@ -69,6 +70,13 @@ Danbooru, AIbooru, Betabooru, Gelbooru
 <br><br>
 
 # Change log
+## [0.7.0] - 2024-02-14
+### Added and Fixed
+- Rule 34 support.
+- Corrected the order of 1boy, 1girl.
+- Rule 34に対応。
+- 1boy, 1girlの並び順を修正。
+
 ## [0.6.2] - 2024-02-09
 ### Fixed
 - Fixed input width for weights.
