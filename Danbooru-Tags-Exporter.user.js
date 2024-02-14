@@ -8,7 +8,7 @@
 // @supportURL   https://github.com/Takenoko3333/Danbooru-Tags-Sort-Exporter/issues
 // @homepageURL  https://github.com/Takenoko3333/Danbooru-Tags-Sort-Exporter
 // @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
-// @version      0.6.2
+// @version      0.7.0
 // @description  Select specified tags and copy to clipboard, for Stable Diffusion WebUI or NovelAI to use. Tags can be sorted by tag order in NovelAI method.
 // @description:zh-TW  選擇指定標籤並複製到剪貼板，供Stable Diffusion WebUI或NovelAI等使用。標籤可根據 NovelAI 的標籤排序方法進行排序。
 // @description:zh-HK  選擇指定標籤並複製到剪貼板，供Stable Diffusion WebUI或NovelAI等使用。標籤可根據 NovelAI 的標籤排序方法進行排序。
@@ -19,6 +19,7 @@
 // @match        https://aibooru.online/posts/*
 // @match        https://betabooru.donmai.us/posts/*
 // @match        https://gelbooru.com/index.php?page=post&s=view*
+// @match        https://rule34.xxx/index.php?page=post&s=view*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=donmai.us
 // @grant        GM.setClipboard
 // @grant        GM.notification
@@ -95,12 +96,17 @@
         }
     }
 
-    GM.addStyle(`#tags-exporter-setting button, #tag-list button {margin: 0.25rem 0 0.5rem 0; padding: 0.25em 0.55em;}
+    let isRule34 = location.hostname == "rule34.xxx";
+    let tagListSelector = isRule34 ? "#tag-sidebar" : "#tag-list";
+
+    GM.addStyle(`#tags-exporter-setting button, ${tagListSelector} button {margin: 0.25rem 0 0.5rem 0; padding: 0.25em 0.55em;}
                  #tags-exporter-setting button#reset-settings {margin-top: .5em}
-                 #tags-exporter-setting label {display: inline-block; padding: .1em .25em; line-height: 1.5em;}
+                 #tags-exporter-setting label {display: inline-block; padding: .1em .25em; line-height: 1.5em; font-weight: normal;}
                  #tags-exporter-setting .heading {margin-top: .25em; line-height: 1.5em;}
                  #tags-exporter-setting .inline-checkbox {display: inline-block;}
-                 #tag-list input[type='checkbox']  {margin-right: .4em}
+                 #tags-exporter-setting input, ${tagListSelector} input[type='checkbox'] {vertical-align: text-bottom;}
+                 #tags-exporter-setting .use-bracket {margin-left: 1.3em;}
+                 ${tagListSelector} input[type='checkbox'] {margin-right: .4em;}
                  .tag-weight {width: 3em; margin-right: .4em}
                 `);
 
@@ -108,10 +114,36 @@
         GM.addStyle(`#tags-exporter-setting {margin: 0 10px 0 25px;}
                      #tags-exporter-setting h2 {font-size: 1.2em;}
                      #tags-exporter-setting .heading {font-weight: bold}
-                     #tags-exporter-setting button, #tag-list button {padding: 0.25em 0.4em;}
+                     #tags-exporter-setting button,  ${tagListSelector} button {padding: 0.25em 0.4em;}
                      [id$="-tag-buttons"] {margin: 0 4px 0 15px;}
                      .tag-weight {width: 2.5em;}
                     `);
+    }
+
+    if (location.hostname == "rule34.xxx") {
+        GM.addStyle(`#tags-exporter-setting {margin: 10px 0;}
+                     #tags-exporter-setting h2 {font-size: 1.2em;}
+                     #tags-exporter-setting .heading {font-weight: bold}
+                     #tags-exporter-setting button,  ${tagListSelector} button {padding: 0.25em 0.4em;}
+                     #tags-exporter-setting input, [class^="tag-type-"] input {margin: 0;}
+                     input.tag-weight {width: 2.5em; padding: 0;}
+                     ${tagListSelector} h6 {margin-top: 13px;}
+                    `);
+
+        for (let i = 0; i < document.styleSheets.length; i++) {
+            let href = document.styleSheets[i].href;
+            if (href) {
+                let fileName = href.split('/').pop();
+                if (fileName.startsWith('mobile.css')) {
+                    GM.addStyle(`#tags-exporter-setting {text-align: center;}
+                     #tags-exporter-setting input, ${tagListSelector} input[type='checkbox'] {height: 27px; vertical-align: middle; transform: scale(1.5);}
+                     #tags-exporter-setting input {margin: 0 0.2em}
+                     ${tagListSelector} input[type='checkbox'] {margin-right: 0.6em;}
+                     #tags-exporter-setting .use-bracket {margin-left: 0;}
+                    `);
+                }
+            }
+        }
     }
 
     let SettingPanel = document.createElement('section');
@@ -121,7 +153,7 @@
         <input type="checkbox" id="sort" ${sortCheck}/><label for="sort">Sort by NovelAI method</label><br>
         <input type="checkbox" id="bracket-escape" ${bracketEscapeCheck}/><label for="bracket-escape"><code>(</code> <code>)</code> -> <code>\\(</code> <code>\\)</code></label><br>
         <input type="checkbox" id="set-weight"  ${setWeightCheck}/><label for="set-weight">Setting weights</label><br>
-        <div>
+        <div class="use-bracket">
         <input type="radio" name="use_bracket" id="round-brackets" value="0" ${roundBracketsRadio}/><label for="round-brackets">Using ( )</label>
         <input type="radio" name="use_bracket" id="curly-brackets" value="1" ${curlyBracketsRadio}/><label for="curly-brackets">Using { }</label>
         </div>
@@ -151,8 +183,8 @@
         referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
     }
 
-    if (location.hostname == "gelbooru.com") {
-        insertBefore(SettingPanel, document.querySelector("#tag-list"));
+    if (location.hostname == "gelbooru.com" || location.hostname == "rule34.xxx") {
+        insertBefore(SettingPanel, document.querySelector(tagListSelector));
     } else {
         insertAfter(SettingPanel, document.querySelector("#search-box"));
     }
@@ -189,7 +221,7 @@
             if(sort) {
                 ["[name=character-tags]:checked","[name=copyright-tags]:checked","[name=artist-tags]:checked","[name=general-tags]:checked"].forEach((t)=>createTags(t));
             } else {
-                createTags(`#tag-list input[type='checkbox']:checked`);
+                createTags(`${tagListSelector} input[type='checkbox']:checked`);
             }
         } else {
             createTags(target);
@@ -212,7 +244,7 @@
             const girlsTags = tags.filter(tag => tag.includes('girl') && regexp.test(tag));
             const boysTags = tags.filter(tag => !tag.includes('girl') && regexp.test(tag));
             const otherTags = tags.filter(tag => !regexp.test(tag));
-            reorderedTags = [...girlsTags, ...boysTags, ...otherTags];
+            reorderedTags = [...boysTags, ...girlsTags, ...otherTags];
         } else {
             reorderedTags = tags;
         }
@@ -224,20 +256,20 @@
 
     function insertButtons(target){
         let head = document.querySelector(`h3.${target}-tag-list`)
-        if (location.hostname == "gelbooru.com") {
+        if (location.hostname == "gelbooru.com" || location.hostname == "rule34.xxx") {
             head = document.querySelector(`.tag-type-${target}`)
         }
         if(!head) return;
         let buttonContainer = Container.cloneNode(true)
         buttonContainer.id = `${target}-tag-buttons`
-        if (location.hostname == "gelbooru.com") {
+        if (location.hostname == "gelbooru.com" || location.hostname == "rule34.xxx") {
             insertBefore(buttonContainer, head)
         } else {
             insertAfter(buttonContainer, head)
         }
 
         let tagItem = `.${target}-tag-list>li`;
-        if (location.hostname == "gelbooru.com") {
+        if (location.hostname == "gelbooru.com" || location.hostname == "rule34.xxx") {
             tagItem = `.tag-type-${target}`;
         }
 
@@ -245,7 +277,7 @@
             let chk = document.createElement('input');
             chk.type = "checkbox"
             chk.name = `${target}-tags`
-            if (location.hostname == "gelbooru.com") {
+            if (location.hostname == "gelbooru.com" || location.hostname == "rule34.xxx") {
                 let aTags = e.querySelectorAll('a');
                 if (aTags.length > 0) {
                     let lastATag = aTags[aTags.length - 1];
@@ -330,7 +362,7 @@
         const target = event ? event.target : document.getElementById('set-weight');
         if (target && target.id === 'set-weight') {
             const isSetWeightChecked = target.checked;
-            document.querySelectorAll("#tag-list input[type='number']").forEach(e => { e.hidden = !isSetWeightChecked; });
+            document.querySelectorAll(`${tagListSelector} input[type='number']`).forEach(e => { e.hidden = !isSetWeightChecked; });
         }
     }
 
@@ -339,19 +371,19 @@
     toggleWeightInputs();
 
     Container.querySelector("[name='select_all']").onclick = function () {
-        var items = document.querySelectorAll("#tag-list input[type='checkbox']")
+        var items = document.querySelectorAll(`${tagListSelector} input[type='checkbox']`)
         for (var i = 0; i < items.length; i++) {
             items[i].checked = true;
         }
     };
     Container.querySelector("[name='select_none']").onclick = function () {
-        var items = document.querySelectorAll("#tag-list input[type='checkbox']")
+        var items = document.querySelectorAll(`${tagListSelector} input[type='checkbox']`)
         for (var i = 0; i < items.length; i++) {
             items[i].checked = false;
         }
     };
     Container.querySelector("[name='invert_select']").onclick = function () {
-        var items = document.querySelectorAll("#tag-list input[type='checkbox']")
+        var items = document.querySelectorAll(`${tagListSelector} input[type='checkbox']`)
         for (var i = 0; i < items.length; i++) {
             items[i].checked == true ? items[i].checked = false : items[i].checked = true;
         }
