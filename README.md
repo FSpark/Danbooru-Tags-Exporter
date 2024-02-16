@@ -72,6 +72,11 @@ Danbooru, AIbooru, Betabooru, Gelbooru, Rule 34, e621
 <br><br>
 
 # Change log
+## [0.8.1] - 2024-02-16
+### Fixed
+- Fixed no output of Species tags in e621.
+- e621でSpeciesのタグが出力されない件を修正。
+
 ## [0.8.0] - 2024-02-16
 ### Added
 - e621 support.
