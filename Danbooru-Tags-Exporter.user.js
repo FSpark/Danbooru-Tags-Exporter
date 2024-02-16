@@ -8,7 +8,7 @@
 // @supportURL   https://github.com/Takenoko3333/Danbooru-Tags-Sort-Exporter/issues
 // @homepageURL  https://github.com/Takenoko3333/Danbooru-Tags-Sort-Exporter
 // @require      https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
-// @version      0.7.0
+// @version      0.8.0
 // @description  Select specified tags and copy to clipboard, for Stable Diffusion WebUI or NovelAI to use. Tags can be sorted by tag order in NovelAI method.
 // @description:zh-TW  選擇指定標籤並複製到剪貼板，供Stable Diffusion WebUI或NovelAI等使用。標籤可根據 NovelAI 的標籤排序方法進行排序。
 // @description:zh-HK  選擇指定標籤並複製到剪貼板，供Stable Diffusion WebUI或NovelAI等使用。標籤可根據 NovelAI 的標籤排序方法進行排序。
@@ -18,6 +18,7 @@
 // @match        https://danbooru.donmai.us/posts/*
 // @match        https://aibooru.online/posts/*
 // @match        https://betabooru.donmai.us/posts/*
+// @match        https://e621.net/posts/*
 // @match        https://gelbooru.com/index.php?page=post&s=view*
 // @match        https://rule34.xxx/index.php?page=post&s=view*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=donmai.us
@@ -41,7 +42,7 @@
         bracketEscape: false, // true: Stable Diffusion, false: NovelAI
         setWeight: false, // true: Show and Activate weight inputs. (ウェイト入力の表示と有効化)
         useBracket: 1, // 0: ( ) Stable Diffusion, 1: { } NovelAI
-        selections: {artist: true, copyright: true, character: true, general: true} // Pre-checked state for each category. (カテゴリ毎の初期選択状態)
+        selections: {artist: true, copyright: true, character: true, species: true, general: true} // Pre-checked state for each category. (カテゴリ毎の初期選択状態)
     };
     // ==/Settings==
 
@@ -65,6 +66,7 @@
     let selectArtistCheck = "";
     let selectCopyrightCheck = "";
     let selectCharacterCheck = "";
+    let selectSpeciesCheck = "";
     let selectGeneralCheck = "";
 
     if(settings.sort) {
@@ -91,6 +93,9 @@
         if(settings.selections.character) {
             selectCharacterCheck = "checked";
         }
+        if(settings.selections.species) {
+            selectSpeciesCheck = "checked";
+        }
         if(settings.selections.general) {
             selectGeneralCheck = "checked";
         }
@@ -104,9 +109,8 @@
                  #tags-exporter-setting label {display: inline-block; padding: .1em .25em; line-height: 1.5em; font-weight: normal;}
                  #tags-exporter-setting .heading {margin-top: .25em; line-height: 1.5em;}
                  #tags-exporter-setting .inline-checkbox {display: inline-block;}
-                 #tags-exporter-setting input, ${tagListSelector} input[type='checkbox'] {vertical-align: text-bottom;}
                  #tags-exporter-setting .use-bracket {margin-left: 1.3em;}
-                 ${tagListSelector} input[type='checkbox'] {margin-right: .4em;}
+                 ${tagListSelector} input[type='checkbox'] {margin-right: .4em; vertical-align: text-bottom;}
                  .tag-weight {width: 3em; margin-right: .4em}
                 `);
 
@@ -126,7 +130,7 @@
                      #tags-exporter-setting .heading {font-weight: bold}
                      #tags-exporter-setting button,  ${tagListSelector} button {padding: 0.25em 0.4em;}
                      #tags-exporter-setting input, [class^="tag-type-"] input {margin: 0;}
-                     input.tag-weight {width: 2.5em; padding: 0;}
+                     input.tag-weight {width: 2.5em; padding: 0 0 0 .1em;}
                      ${tagListSelector} h6 {margin-top: 13px;}
                     `);
 
@@ -146,6 +150,20 @@
         }
     }
 
+    if (location.hostname != "e621.net") {
+        GM.addStyle(`#tags-exporter-setting .show-e621 {display: none;}
+                    `);
+    }
+
+    if (location.hostname == "e621.net") {
+        GM.addStyle(`#tags-exporter-setting h2 {font-size: 1.16667em;}
+                     #tags-exporter-setting .show-e621 {display: inline-block;}
+                     .tag-list-header {margin-bottom: 2px;}
+                     ul + .tag-list-header {margin-top: 8px;}
+                     .tag-weight {width: 2.5em; padding: 1px;}
+                    `);
+    }
+
     let SettingPanel = document.createElement('section');
     SettingPanel.id = "tags-exporter-setting";
     SettingPanel.innerHTML = `
@@ -162,6 +180,7 @@
         <span class="inline-checkbox"><input type="checkbox" id="select-artist" ${selectArtistCheck}/><label for="select-artist">Artist</label></span>
         <span class="inline-checkbox"><input type="checkbox" id="select-copyright" ${selectCopyrightCheck}/><label for="select-copyright">Copyright</label></span>
         <span class="inline-checkbox"><input type="checkbox" id="select-character" ${selectCharacterCheck}/><label for="select-character">Character</label></span>
+        <span class="inline-checkbox show-e621"><input type="checkbox" id="select-species" ${selectGeneralCheck}/><label for="select-species">Species</label></span>
         <span class="inline-checkbox"><input type="checkbox" id="select-general" ${selectGeneralCheck}/><label for="select-general">General</label></span>
         </div>
         <button name="reset_settings" id="reset-settings">Settings Reset</button>
@@ -259,10 +278,13 @@
         if (location.hostname == "gelbooru.com" || location.hostname == "rule34.xxx") {
             head = document.querySelector(`.tag-type-${target}`)
         }
+        if (location.hostname == "e621.net") {
+            head = document.querySelector(`.${target}-tag-list`)
+        }
         if(!head) return;
         let buttonContainer = Container.cloneNode(true)
         buttonContainer.id = `${target}-tag-buttons`
-        if (location.hostname == "gelbooru.com" || location.hostname == "rule34.xxx") {
+        if (location.hostname == "gelbooru.com" || location.hostname == "rule34.xxx" || location.hostname == "e621.net") {
             insertBefore(buttonContainer, head)
         } else {
             insertAfter(buttonContainer, head)
@@ -277,7 +299,7 @@
             let chk = document.createElement('input');
             chk.type = "checkbox"
             chk.name = `${target}-tags`
-            if (location.hostname == "gelbooru.com" || location.hostname == "rule34.xxx") {
+            if (location.hostname == "gelbooru.com" || location.hostname == "rule34.xxx" || location.hostname == "e621.net") {
                 let aTags = e.querySelectorAll('a');
                 if (aTags.length > 0) {
                     let lastATag = aTags[aTags.length - 1];
@@ -335,6 +357,7 @@
         let selections = {artist: document.getElementById("select-artist").checked,
                           copyright: document.getElementById("select-copyright").checked,
                           character: document.getElementById("select-character").checked,
+                          species: document.getElementById("select-species").checked,
                           general: document.getElementById("select-general").checked
                          };
         localStorage.setItem("settings", JSON.stringify({sort: sort, bracketEscape: bracketEscape, setWeight: setWeight, useBracket: useBracket, selections: selections}));
@@ -355,6 +378,7 @@
         document.getElementById("select-artist").checked = initialSettings.selections.artist;
         document.getElementById("select-copyright").checked = initialSettings.selections.copyright;
         document.getElementById("select-character").checked = initialSettings.selections.character;
+        document.getElementById("select-species").checked = initialSettings.selections.species;
         document.getElementById("select-general").checked = initialSettings.selections.general;
     }
 
@@ -366,7 +390,7 @@
         }
     }
 
-    ["artist","character","copyright","general"].forEach((t)=>insertButtons(t))
+    ["artist","character","copyright", "species", "general"].forEach((t)=>insertButtons(t))
 
     toggleWeightInputs();
 
