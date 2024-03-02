@@ -26,6 +26,8 @@
 // @grant        GM.notification
 // @grant        GM.addStyle
 // @license      AGPL-3.0
+// @downloadURL https://update.sleazyfork.org/scripts/484998/Danbooru%20Tags%20Select%20to%20Sort%20and%20Export.user.js
+// @updateURL https://update.sleazyfork.org/scripts/484998/Danbooru%20Tags%20Select%20to%20Sort%20and%20Export.meta.js
 // ==/UserScript==
 
 // Forked from FSpark/Danbooru-Tags-Exporter(https://github.com/FSpark/Danbooru-Tags-Exporter)
@@ -229,49 +231,92 @@
         n=Math.abs(n)
         return l.repeat(n).concat(prompts,r.repeat(n))
     }
-    function exportTags(target){
-        let tags = []
-        let reorderedTags = []
-        let sort = document.getElementById("sort").checked
-        let bracket_escape = document.getElementById("bracket-escape").checked
-        let set_weight = document.getElementById("set-weight").checked
-        let round_brackets = document.getElementById("round-brackets").checked
-        if(!target) {
-            if(sort) {
-                ["[name=character-tags]:checked", "[name=copyright-tags]:checked", "[name=artist-tags]:checked", "[name=species-tags]:checked", "[name=general-tags]:checked"].forEach((t)=>createTags(t));
+function exportTags(target){
+    let tags = [];
+    let reorderedTags = [];
+    let sort = document.getElementById("sort").checked;
+    let bracket_escape = document.getElementById("bracket-escape").checked;
+    let set_weight = document.getElementById("set-weight").checked;
+    let round_brackets = document.getElementById("round-brackets").checked;
+
+    function addBrackets(prompts, isRound, n){
+        let l, r;
+        if(n == 0) {
+            return prompts;
+        } else if(n > 0) {
+            if(isRound){
+                l = '(';
+                r = ')';
             } else {
-                createTags(`${tagListSelector} input[type='checkbox']:checked`);
+                l = '{';
+                r = '}';
             }
         } else {
-            createTags(target);
+            l = '[';
+            r = ']';
         }
-        function createTags(target) {
-            document.querySelectorAll(target).forEach((e) => {
-                let prompts = e.value
-                if(bracket_escape) {
-                    prompts = prompts.replaceAll(`(`,`\\(`).replaceAll(`)`,`\\)`)
-                }
-                if(set_weight) {
-                    prompts = addBrackets(prompts,round_brackets,e.nextSibling.value)
-                }
-                tags.push(prompts)
-            })
-        }
-
-        if(sort) {
-            const regexp = /[1-6]\+?(girl|boy)s?/;
-            const girlsTags = tags.filter(tag => tag.includes('girl') && regexp.test(tag));
-            const boysTags = tags.filter(tag => !tag.includes('girl') && regexp.test(tag));
-            const otherTags = tags.filter(tag => !regexp.test(tag));
-            reorderedTags = [...boysTags, ...girlsTags, ...otherTags];
-        } else {
-            reorderedTags = tags;
-        }
-        let res = reorderedTags.join(", ")
-
-        GM.setClipboard(res)
-        GM.notification(`${reorderedTags.length} tag(s) were copied.`, "Danbooru Tags Sort and Exporter")
+        n = Math.abs(n);
+        return l.repeat(n).concat(prompts, r.repeat(n));
     }
+
+    function addPrefix(tag, prefix) {
+    return prefix ? `${prefix}:${tag}` : tag;
+
+    }
+
+    if(!target) {
+        if(sort) {
+            ["[name=character-tags]:checked", "[name=copyright-tags]:checked", "[name=artist-tags]:checked", "[name=species-tags]:checked", "[name=general-tags]:checked"].forEach((t) => { createTags(t); });
+        } else {
+            createTags(`${tagListSelector} input[type='checkbox']:checked`);
+        }
+    } else {
+        createTags(target);
+    }
+
+    function createTags(target) {
+        document.querySelectorAll(target).forEach((e) => {
+            let prompts = e.value;
+            if(bracket_escape) {
+                prompts = prompts.replaceAll(`(`, `\\(`).replaceAll(`)`, `\\)`);
+            }
+            if(set_weight) {
+                prompts = addBrackets(prompts, round_brackets, e.nextSibling.value);
+            }
+
+            // Add prefixes if Sort by NovelAI method is active
+            if(sort) {
+                let prefix = "";
+                if(e.name === "character-tags") {
+                    prefix = "character";
+                } else if(e.name === "copyright-tags") {
+                    prefix = "copyright";
+                } else if(e.name === "artist-tags") {
+                    prefix = "artist";
+                }
+
+                prompts = addPrefix(prompts, prefix);
+            }
+
+            tags.push(prompts);
+        });
+    }
+
+    if(sort) {
+        const regexp = /[1-6]\+?(girl|boy)s?/;
+        const girlsTags = tags.filter(tag => tag.includes('girl') && regexp.test(tag));
+        const boysTags = tags.filter(tag => !tag.includes('girl') && regexp.test(tag));
+        const otherTags = tags.filter(tag => !regexp.test(tag));
+        reorderedTags = [...boysTags, ...girlsTags, ...otherTags];
+    } else {
+        reorderedTags = tags;
+    }
+
+    let res = reorderedTags.join(", ");
+
+    GM.setClipboard(res);
+    GM.notification(`${reorderedTags.length} tag(s) were copied.`, "Danbooru Tags Sort and Exporter");
+}
 
     function insertButtons(target){
         let head = document.querySelector(`h3.${target}-tag-list`)
