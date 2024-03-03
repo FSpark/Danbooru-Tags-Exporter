@@ -280,9 +280,7 @@ function exportTags(target){
             if(bracket_escape) {
                 prompts = prompts.replaceAll(`(`, `\\(`).replaceAll(`)`, `\\)`);
             }
-            if(set_weight) {
-                prompts = addBrackets(prompts, round_brackets, e.nextSibling.value);
-            }
+
 
             // Add prefixes if Sort by NovelAI method is active
             if(sort) {
@@ -298,6 +296,9 @@ function exportTags(target){
                 prompts = addPrefix(prompts, prefix);
             }
 
+            if(set_weight) {
+                prompts = addBrackets(prompts, round_brackets, e.nextSibling.value);
+            }
             tags.push(prompts);
         });
     }
